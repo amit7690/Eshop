@@ -1,0 +1,50 @@
+{% extends 'estore/base.html' %}
+{% block title %}
+   Eshop-Signup
+{% endblock %}
+
+{% block content %}
+{% comment %} border px-4 py-3 rounded-circle text-primary {% endcomment %}
+<div class="container my-4">
+<h4 class="text-secondary"> E-Shop Signup <h4>
+    <div class="row">
+        <div class="col-lg-5 col-md-5 col-sm-5 col-8 mx-auto">
+            <div class="border border-secondary p-4  m-3 rounded">
+                <div class="text-center ">
+                    <span style="font-size:50px;">
+                        <i class="fa-solid fa-user border p-4 rounded-circle text-primary mb-3"></i>
+                    </span>
+                    </div>
+
+                {% if error %}
+                    <div class="alert alert-danger p-1" role="alert">
+                         <small style="font-size:14px; font-weight:bold;">{{ error }}</small>
+                    </div>
+                {% endif %}
+                <form method="POST" action="{% url 'signup' %}" >
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="first_name" value="{{ values.first_name }}" placeholder="First Name">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="last_name" value="{{ values.last_name }}" placeholder="Last Name">
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" class="form-control" name="phone" value="{{ values.phone }}"  placeholder="Phone">
+                    </div>
+                   <div class="form-group">
+                        <input type="email" class="form-control" name="email" value="{{ values.email }}" placeholder="Phone">
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="password" value="{{ values.password }}" placeholder="Password">
+                    </div>
+                   
+                    <button type="submit" class="btn btn-primary">Create an account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

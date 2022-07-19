@@ -1,0 +1,104 @@
+{% extends 'estore/base.html' %}
+
+{% block content %}
+
+{% load cart %}
+{% load custom_filter %}
+
+
+<div class="container border mt-2">
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="p-2">
+            {% if request.session.customer %}
+             <h4 class="text-primary">My Cart (<span>{{request.session.cart.keys|length}}</span>)</h4>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <table class="table p-0">
+  <thead>
+    <tr>
+      <th scope="col">S.No.</th>
+      <th scope="col">Image</th>
+      <th scope="col">Product</th>
+      <th scope="col">Price</th>
+      <th scope="col">Qunatity</th>
+      <th scope="col">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+
+  {% for product in products %}
+    <tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <td><img src="/media/{{ product.image }}" class="card-img-top img-fluid" alt="..." style="width:80px; height: 100px"></td>
+      <td>{{ product.name}}</td>
+      <td>{{ product.price|currency}}</td>
+      <td>{{product|cart_quantity:request.session.cart}}</td>
+      <td>{{product|price_total:request.session.cart|currency}}</td>
+    </tr>
+  {% endfor %}
+   </tbody>
+   <tfoot>
+        <tr>
+            
+              <th class="">
+              {% if request.session.cart.keys|length == 0%}
+                <button type="button" class="btn btn-primary" data-toggle="modal"  disabled data-target="#checkoutModal">
+                Check Out
+                </button>
+              {% else %}
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#checkoutModal">
+                Check Out
+                </button>
+              {% endif %}
+              </th>
+           
+            
+            <th colspan="3"></th>
+            <th class="" colspan="">Total</th>
+            <th>{{products|total_cart_price:request.session.cart|currency}}</th>
+        </tr>
+    </tfoot>
+</table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="checkoutModalLabel">CheckOut</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+       <form method='POST' action='/check-out'>
+       {% csrf_token %}
+        <div class="form-group">
+          <label for="address">Email address</label>
+          <input type="text" class="form-control" id="address" name="address" placeholder="Enter Address">
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone">
+        </div>
+
+          <div class="text-right">
+            <input type="submit" class="btn btn-primary" value='Save changes'>
+         </div>
+      
+      </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+{% endblock %}

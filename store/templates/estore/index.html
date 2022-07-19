@@ -1,0 +1,130 @@
+{% extends 'estore/base.html' %}
+{% block content %}
+
+{% load cart %}
+{% load custom_filter %}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-lg-3 col-md-3 col-sm-3">
+            <ul class="list-group">
+               <a href="{% url 'homepage' %}" class="list-group-item list-group-item-action btn btn-outline-success">All Products</a>
+                {% for category in categories %}
+                    <a href="?category={{category.id}}" class="list-group-item list-group-item-action btn btn-outline-success">{{ category.name }}</a>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-lg-9 col-md-9 col-sm-9 mx-auto">
+            <div class="row">
+            {% for product in products %}
+                <div class="col-lg-4 col-md-4 col-sm-4 mb-3">
+                    <a href="#" data-toggle="modal" data-target="#pr-{{product.id}}">
+                        <div class="card" style="width: 18rem;">
+                        <img src="/media/{{ product.image }}" class="card-img-top img-fluid" alt="..." style="width:286px; height: 322px">
+                            <div class="card-body">
+                                <h5 class="card-title" >
+                                    <!-- Button trigger modal -->
+                                    <a class="text-decoration-none" href="#" style="font-size:18px" data-toggle="modal" data-target="#pr-{{product.id}}">
+                                    {{ product.name|slice:":20" }}......
+                                    </a>
+                                </h5>
+                                </div>
+
+
+                            <!-- Modal -->
+                                <div class="modal fade" id="pr-{{product.id}}" tabindex="-1" role="dialog" aria-labelledby="pr-{{product.id}}Title" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="pr-{{product.id}}Title">{{product.name}}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                       <div class="row">
+                                        <div class="col-md-6  border-right ">
+                                            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                                                <ol class="carousel-indicators">
+                                                    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                                                    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                                                    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                                                </ol>
+                                                <div class="carousel-inner">
+                                                    <div class="carousel-item active">
+                                                    <img src="/media/{{ product.image }}" class="d-block w-100" alt="...">
+                                                    </div>
+                                                    <div class="carousel-item">
+                                                    <img src="/media/{{ product.image }}" class="d-block w-100" alt="...">
+                                                    </div>
+                                                    <div class="carousel-item">
+                                                    <img src="/media/{{ product.image }}" class="d-block w-100" alt="...">
+                                                    </div>
+                                                </div>
+                                                <a class="carousel-control-prev text-primary" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                                                    {% comment %} <span class="carousel-control-prev-icon " aria-hidden="true"></span> {% endcomment %}
+                                                    <i class="fa-solid fa-angle-left" style="font-size:24px;"></i>
+                                                    <span class="sr-only">Previous</span>
+                                                </a>
+                                                <a class="carousel-control-next text-primary" href="#carouselExampleIndicators" role="button" data-slide="next">
+                                                    {% comment %} <span class="carousel-control-next-icon" aria-hidden="true"></span> {% endcomment %}
+                                                    <i class="fa-solid fa-angle-right" style="font-size:24px;"></i>
+                                                    <span class="sr-only">Next</span>
+                                                </a>
+                                                </div>
+                                        </div>
+                                        <div class="col-md-6 p-3 px-4">
+                                            <ul class="list-unstyled">
+                                                <li><h4>{{product.name}}</h4></li>
+                                                <li><p class="card-text"><b>{{product.price| currency}}</b></p></li>
+                                                <li><p>{{ product.description}}</p></li>                                            
+                                            </ul>
+                                            {% if product|is_in_cart:request.session.cart %}
+                                                <div class="card-footer p-0 no-gutters" style="width:210px;">
+                                                    <div class="row no-gutters">
+                                                        <form action="/#{{product.id}}" class="col-2 " method="post">
+                                                            {% csrf_token %}
+                                                            <input hidden type="text" name='product' value='{{product.id}}'>
+                                                            <input hidden type="text" name='remove' value='True'>
+                                                            <input type="submit" value=" - " class="btn btn-block btn-info border-right">
+                                                        </form>
+                                                        <div class="text-center col btn btn-info"> 
+                                                            {{product|cart_quantity:request.session.cart}} in Cart
+                                                        </div>
+                                                        <form action="/#{{product.id}}" class="col-2 " method="post">
+                                                        {% csrf_token %}
+                                                        <input hidden type="text" name='product' value='{{product.id}}'>
+                                                        <input type="submit" value=" + " class="btn btn-block btn-info border-left">
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                {% else %}
+                                                <form action="/#{{product.id}}" method="POST" class="btn-block">
+                                                    {% csrf_token %}
+                                                    <input hidden type="text" name='product' value='{{product.id}}'>
+                                                    <input type="submit" class="float-right btn btn-info form-control"
+                                                        value="Add To Cart">
+                                                </form>
+                                            {% endif %}
+                                        </div>
+
+                                       </div>
+                                    </div>
+                                    {% comment %} <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary">Save changes</button>
+                                    </div> {% endcomment %}
+                                    </div>
+                                </div>
+                                </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+                      
+            </div>
+        </div>
+    </div>   
+</div>
+
+
+{% endblock %}
